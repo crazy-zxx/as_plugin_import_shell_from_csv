@@ -49,7 +49,7 @@ class Plugin {
       list: [{
         type: "settings",
         labelWidth: 50,
-        inputWidth: 470,
+        inputWidth: 400,
       }, {
         type: "input",
         name: "filepath",
@@ -143,15 +143,43 @@ class Plugin {
     }
     this.win.win.progressOn();
     grid.getAllRowIds().split(",").map((id) => {
-      let type = grid.cells(id, 3).getValue();
       let data = {
         'url': grid.cells(id, 4).getValue(),
         'category': grid.cells(id, 1).getValue(),
         'pwd': grid.cells(id, 2).getValue(),
-        'type': (type != "php" && type != "asp" && type != "aspx" && type != "custom") ? type : "custom",
-        'note': grid.cells(id, 0).getValue()
+        'type': grid.cells(id, 3).getValue(),
+        'note': grid.cells(id, 0).getValue(),
+        "encode":"UTF8",
+        "encoder":"default",
+        "decoder":"default",
       }
-      let ret = antSword.ipcRenderer.sendSync('shell-add', { base: data });
+      // 根据AntSword源码 https://github.com/AntSwordProject/antSword/blob/6112ab2c3f6dceda68421cf02ca2dc43a940a01f/modules/database.js#L166-L167
+      // 添加两个字段，使用默认值，修复批量导入双击条目失效的问题
+      let http_data = {
+        "body":{},
+        "headers":{}
+      }
+      let other_data = {
+        "add-MassData":0,
+        "chunk-step-byte-max":"3",
+        "chunk-step-byte-min":"2",
+        "command-path":"",
+        "custom-datatag-tage":"",
+        "custom-datatag-tags":"",
+        "filemanager-cache":1,
+        "ignore-https":0,
+        "random-Prefix":"2",
+        "request-timeout":"10000",
+        "terminal-cache":0,
+        "upload-fragment":"500",
+        "use-chunk":0,
+        "use-custom-datatag":0,
+        "use-multipart":0,
+        "use-random-variable":0,
+        "use-raw-body":0
+      }
+      // 添加两个字段，修复批量导入双击条目失效的问题
+      let ret = antSword.ipcRenderer.sendSync('shell-add', { base: data, http: http_data, other: other_data });
       (ret instanceof Object) ? log.success.push(data['url']) : log.error.push(data['url']);
     });
     // 成功与失败的通知
