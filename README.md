@@ -2,6 +2,8 @@
 
 从 CSV 中 批量导入 Shell
 
+> **已经修复原版导入数据无法正常双击打开的问题！**
+
 ## Example
 
 ```csv
@@ -13,9 +15,3 @@ CSV格式：
 测试2,test,pass,php,http://fbi.com/warning.php
 测试3,test,666,php,https://www.virzz.com/vk.php
 ```
-
-## ???
-
-任性挖坑，随缘填坑
-
-**欢迎 PR，坚决不更**
